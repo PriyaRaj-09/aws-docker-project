@@ -16,7 +16,23 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
             cd ~/aws-docker-project
             git pull origin main
             docker compose up -d --build
-            docker image prune -f
+            docker compose restart nginx
+
+            echo "Checking if the app is healthy..."
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              if curl -fs http://localhost/health; then
+                echo ""
+                echo "App is healthy. Deploy successful!"
+                docker image prune -f
+                exit 0
+              fi
+              sleep 3
+            done
+
+            echo "App is NOT healthy. Deploy failed!"
+            docker compose logs web --tail 20
+            exit 1
