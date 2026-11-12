@@ -19,3 +19,12 @@ cd aws-docker-project
 docker compose up -d --build
 ```
 Then open `http://<server-ip>` in a browser.
+
+## CI/CD Pipeline (GitHub Actions)
+Every push to `main` automatically deploys to the EC2 server.
+
+**Flow:** git push → GitHub Actions → SSH into EC2 → git pull → docker compose up --build → restart Nginx → health check
+
+- Server details and SSH key are stored as encrypted **GitHub Secrets**
+- A health check on `/health` retries for ~30 seconds
+- If the app doesn't come up healthy, the pipeline **fails** and prints the app's error logs
