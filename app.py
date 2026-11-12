@@ -8,7 +8,7 @@ r = redis.Redis(host=os.getenv("REDIS_HOST", "redis"), port=6379)
 @app.route("/")
 def home():
     count = r.incr("visits")
-    return f"<h1>Hello from Docker on AWS!</h1><p>This page has been visited {count} times 🚀</p>"
+        return f"<h1>Deployed automatically with GitHub Actions! 🚀</h1><p>This page has been visited {count} times</p>"
 
 @app.route("/health")
 def health():
